@@ -1,16 +1,16 @@
-# 💊 FarmaIQ — Türkçe Sosyal Medyada İlaç Yan Etki Madenciliği
+# 💊 FarmaIQ — Türkçe Kullanıcı Yorumlarında İlaç Yan Etki Madenciliği
 
-> Türkçe ilaç yorumlarından yapay zeka ile yan etki tespiti ve prospektüs karşılaştırması
+> Türkçe ilaç yorumlarından yapay zeka ile yan etki tespiti ve TİTCK KÜB/prospektüs karşılaştırması
 
 **İnönü Üniversitesi · Bilgisayar Mühendisliği · Yapay Zeka Dersi**
 
 ---
 
-## 🎯 Proje Nedir?
+## 🎯 Proje Hakkında
 
-Hastalar ilaç kullanım deneyimlerini sosyal medyada aktif olarak paylaşıyor. Bu yorumlar, klinik çalışmalarda gözden kaçabilen gerçek dünya yan etkilerini içeriyor. FarmaIQ, bu yorumları otomatik olarak analiz eden, yan etkileri tespit eden ve resmi TİTCK prospektüsleriyle karşılaştıran bir yapay zeka sistemidir.
+Hastalar ilaç kullanım deneyimlerini sosyal medyada ve çevrimiçi platformlarda aktif olarak paylaşıyor. Bu yorumlar, klinik çalışmalarda gözden kaçabilen gerçek dünya yan etkilerini içeriyor. FarmaIQ, bu yorumları otomatik olarak analiz eden, yan etkileri tespit eden ve resmi TİTCK KÜB/prospektüs verileriyle karşılaştıran bir yapay zeka sistemidir.
 
-**Problem:** Türkçe sosyal medyada paylaşılan ilaç yan etki raporları manuel olarak takip edilemiyor.
+**Problem:** Türkçe kullanıcı yorumlarında paylaşılan ilaç yan etki raporları manuel olarak takip edilemiyor.
 
 **Çözüm:** BERTurk tabanlı derin öğrenme modeli ile otomatik yan etki tespiti ve kategorizasyon.
 
@@ -18,10 +18,10 @@ Hastalar ilaç kullanım deneyimlerini sosyal medyada aktif olarak paylaşıyor.
 
 ## ✨ Özellikler
 
-- 🔍 **Yan Etki Tespiti** — BERTurk fine-tune modeliyle %96 doğrulukla Türkçe yorumlardan yan etki sınıflandırması
+- 🔍 **Yan Etki Tespiti** — BERTurk fine-tune modeliyle test verisi üzerinde %95 doğrulukla Türkçe yorumlardan yan etki sınıflandırması
 - 🏷️ **Kategori Tespiti** — Semantik benzerlik ile sindirim, nörolojik, dermatolojik, kardiyovasküler kategorilerinde otomatik sınıflandırma
-- 📋 **Prospektüs Karşılaştırması** — Tespit edilen yan etkinin resmi TİTCK prospektüsünde yer alıp almadığının tespiti
-- 📊 **İnteraktif Dashboard** — React tabanlı arayüzde gerçek zamanlı analiz ve veri görselleştirme
+- 📋 **Prospektüs Karşılaştırması** — Tespit edilen yan etkinin TİTCK tarafından yayımlanan kısa ürün bilgileri ve prospektüs verileriyle eşleştirilmesi
+- 📊 **İnteraktif Dashboard** — React tabanlı arayüzde anlık yorum analizi ve veri görselleştirme
 - 🌐 **REST API** — FastAPI ile geliştirilmiş, kolayca entegre edilebilir backend
 
 ---
@@ -31,9 +31,9 @@ Hastalar ilaç kullanım deneyimlerini sosyal medyada aktif olarak paylaşıyor.
 | Model | Accuracy | Macro F1 |
 |-------|----------|----------|
 | TF-IDF + Logistic Regression (Baseline) | 0.76 | 0.76 |
-| **BERTurk Fine-Tune** | **0.96** | **0.96** |
+| **BERTurk Fine-Tune** | **0.95** | **0.95** |
 
-BERTurk modeli baseline'a kıyasla **%20 doğruluk artışı** sağladı.
+BERTurk modeli baseline modele kıyasla doğrulukta **20 yüzde puanlık artış** sağlamıştır.
 
 ### Sınıf Bazında Performans (BERTurk)
 
@@ -49,14 +49,14 @@ BERTurk modeli baseline'a kıyasla **%20 doğruluk artışı** sağladı.
 | Özellik | Değer |
 |---------|-------|
 | Toplam yorum | 476 |
-| Yan etki var | ~200 |
-| Yan etki yok | ~276 |
+| Yan etki var | 200 |
+| Yan etki yok | 276 |
 | Farklı ilaç sayısı | 25 |
 | Dil | Türkçe |
 
 ### Veri Kaynakları
 
-- **Sosyal Medya** — Türkçe forum ve sosyal medya platformlarından toplanan gerçek kullanıcı yorumları
+- **Sosyal Medya ve Forum** — Türkçe forum ve sosyal medya platformlarından toplanan gerçek kullanıcı yorumları
 - **Google Form** — Proje kapsamında doğrudan kullanıcılardan toplanan birincil veriler
 
 ### Desteklenen İlaçlar
@@ -79,20 +79,38 @@ BERTurk modeli baseline'a kıyasla **%20 doğruluk artışı** sağladı.
 
 ```bash
 pip3 install -r requirements.txt
+```
 
-# Model eğitimi
+### Model Eğitimi
+
+```bash
 python3 src/normalize.py
 python3 src/kategori_model.py
 python3 src/bertturk.py
+```
 
-# Backend
+### Uygulamayı Çalıştırma
+
+**Backend** (Terminal 1):
+```bash
 uvicorn src.api:app --port 8000 --host 0.0.0.0
+```
 
-# Frontend
-cd ../frontend && npm start
+**Frontend** (Terminal 2):
+```bash
+cd ../frontend
+npm install
+npm start
+```
 
-# veya tek komutla
+**Tek komutla** (proje kök dizininden):
+```bash
 npm run dev
+```
+
+**Streamlit Demo:**
+```bash
+streamlit run src/demo.py
 ```
 
 ---
@@ -114,12 +132,12 @@ npm run dev
 
 ## 📈 Geliştirme Süreci
 
-1. **Veri Toplama** — Sosyal medya ve Google Form ile 476 Türkçe ilaç yorumu toplandı
+1. **Veri Toplama** — Sosyal medya, forum ve Google Form ile 476 Türkçe ilaç yorumu toplandı
 2. **Veri Temizleme** — Gürültülü ve alakasız yorumlar filtrelendi
 3. **Etiketleme** — Yan etki var/yok ve kategori etiketleri atandı
 4. **Normalizasyon** — Kısa yorumlar cümle formatına dönüştürüldü
 5. **Baseline** — TF-IDF + Logistic Regression ile %76 doğruluk elde edildi
-6. **BERTurk Fine-Tune** — 4 epoch eğitimle %96 doğruluğa ulaşıldı
+6. **BERTurk Fine-Tune** — 4 epoch eğitimle %95 doğruluğa ulaşıldı
 7. **Prospektüs Entegrasyonu** — 25 ilaç için TİTCK KÜB verileri işlendi
 8. **API ve Arayüz** — FastAPI backend ve React frontend geliştirildi
 
@@ -131,6 +149,12 @@ npm run dev
 - Nadir yan etki kategorilerinde örnek sayısı az
 - Olumsuzluk içeren bazı cümleler yanlış sınıflandırılabiliyor
 - Prospektüs verileri 25 ilaçla sınırlı
+
+---
+
+## ⚕️ Uyarı
+
+FarmaIQ akademik amaçlı geliştirilmiş bir yapay zeka projesidir. Sistem çıktıları kesin tıbbi tanı, tedavi önerisi veya ilaç kullanımı tavsiyesi olarak değerlendirilmemelidir. Sağlık sorunları ve ilaç yan etkileri için mutlaka bir sağlık uzmanına danışılmalıdır.
 
 ---
 

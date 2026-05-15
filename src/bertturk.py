@@ -1,10 +1,13 @@
 import pandas as pd
 import torch
+import matplotlib.pyplot as plt
+import numpy as np
 from torch.utils.data import Dataset, DataLoader
 from transformers import BertTokenizer, BertForSequenceClassification
 from torch.optim import AdamW
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, confusion_matrix
+import seaborn as sns
 
 df = pd.read_csv("data/labeled/etiketlenmis.csv")
 df = df.dropna(subset=["yan_etki"])
@@ -45,6 +48,8 @@ model.to(device)
 
 optimizer = AdamW(model.parameters(), lr=2e-5)
 
+epoch_losses = []
+
 for epoch in range(4):
     model.train()
     total_loss = 0
@@ -57,7 +62,23 @@ for epoch in range(4):
         out.loss.backward()
         optimizer.step()
         total_loss += out.loss.item()
-    print(f"Epoch {epoch+1}/4 - Loss: {total_loss/len(train_loader):.4f}")
+    avg_loss = total_loss / len(train_loader)
+    epoch_losses.append(avg_loss)
+    print(f"Epoch {epoch+1}/4 - Loss: {avg_loss:.4f}")
+
+# ─── EĞİTİM LOSS GRAFİĞİ ───
+plt.figure(figsize=(8, 4))
+plt.plot(range(1, 5), epoch_losses, marker='o', color='#2563eb', linewidth=2, markersize=8)
+plt.fill_between(range(1, 5), epoch_losses, alpha=0.1, color='#2563eb')
+plt.title("BERTurk Eğitim Loss Grafiği", fontsize=14, fontweight='bold', pad=15)
+plt.xlabel("Epoch", fontsize=12)
+plt.ylabel("Loss", fontsize=12)
+plt.xticks(range(1, 5))
+plt.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.savefig("data/labeled/egitim_loss.png", dpi=150, bbox_inches='tight')
+plt.close()
+print("[✓] Eğitim loss grafiği kaydedildi")
 
 model.eval()
 preds, labels = [], []
@@ -73,7 +94,21 @@ print("\n=== BERTurk Fine-Tune Sonuçları ===")
 print(classification_report(labels, preds,
       target_names=["Yan Etki Yok", "Yan Etki Var"]))
 
-# Doğru kaydetme — tüm modeli kaydet
+# ─── CONFUSION MATRIX ───
+cm = confusion_matrix(labels, preds)
+plt.figure(figsize=(6, 5))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
+            xticklabels=["Yan Etki Yok", "Yan Etki Var"],
+            yticklabels=["Yan Etki Yok", "Yan Etki Var"],
+            annot_kws={"size": 14, "weight": "bold"})
+plt.title("Confusion Matrix — BERTurk", fontsize=14, fontweight='bold', pad=15)
+plt.ylabel("Gerçek", fontsize=12)
+plt.xlabel("Tahmin", fontsize=12)
+plt.tight_layout()
+plt.savefig("data/labeled/confusion_matrix.png", dpi=150, bbox_inches='tight')
+plt.close()
+print("[✓] Confusion matrix kaydedildi")
+
 model.save_pretrained("data/labeled/bertturk_finetuned")
 tokenizer.save_pretrained("data/labeled/bertturk_finetuned")
 print("[✓] Model kaydedildi → data/labeled/bertturk_finetuned/")
