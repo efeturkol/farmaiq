@@ -18,3 +18,4 @@ venv/
 api.log
 api.error.log
 nohup.out
+data/labeled/bertturk_model.pt
